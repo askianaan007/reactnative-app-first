@@ -3,22 +3,28 @@ import React from "react";
 import InputBox from "../../components/forms/InputBox";
 import { useState } from "react";
 import SubmitButton from "../../components/forms/SubmitButton";
-
-const Login = ({navigation}) => {
+import axios from "axios";
+const Login = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     try {
       setLoading(true);
-      if ( !email || !password) {
+      if (!email || !password) {
         Alert.alert("please fill all the fields");
         setLoading(false);
         return;
       }
       setLoading(false);
-      console.log("login data==>", {  email, password });
+      const { data } = await axios.post(
+        "http://192.168.232.153:8080/api/v1/auth/login",
+        { email, password }
+      );
+      alert(data && data.message);
+      console.log("login data==>", { email, password });
     } catch (error) {
+      alert(error.response.data.message);
       setLoading(false);
       console.log(error);
     }
@@ -28,8 +34,6 @@ const Login = ({navigation}) => {
     <View style={styles.container}>
       <Text style={styles.pageTitle}>Login</Text>
       <View style={{ marginHorizontal: 20 }}>
-        
-
         <InputBox
           inputTitle={"Email"}
           keyboardType="email-address"
@@ -53,9 +57,13 @@ const Login = ({navigation}) => {
         handleSubmit={handleSubmit}
       />
       <Text style={styles.linkText}>
-        Not a user please <Text style={styles.link}
-        onPress={()=> navigation.navigate("Register")}>
-            REGISTER</Text>
+        Not a user please{" "}
+        <Text
+          style={styles.link}
+          onPress={() => navigation.navigate("Register")}
+        >
+          REGISTER
+        </Text>
         {""}
       </Text>
     </View>

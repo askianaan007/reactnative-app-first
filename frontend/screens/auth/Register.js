@@ -3,13 +3,14 @@ import React from "react";
 import InputBox from "../../components/forms/InputBox";
 import { useState } from "react";
 import SubmitButton from "../../components/forms/SubmitButton";
+import axios from "axios";
 
-const Register = ({navigation}) => {
+const Register = ({ navigation }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     try {
       setLoading(true);
       if (!name || !email || !password) {
@@ -18,8 +19,14 @@ const Register = ({navigation}) => {
         return;
       }
       setLoading(false);
-      console.log("regiter data==>", { name, email, password });
+      const { data } = await axios.post(
+        "http://192.168.232.153:8080/api/v1/auth/register",
+        { name, email, password }
+      );
+      alert(data && data.message);
+      console.log("register data==>", { name, email, password });
     } catch (error) {
+      alert(error.response.data.message)
       setLoading(false);
       console.log(error);
     }
@@ -54,7 +61,7 @@ const Register = ({navigation}) => {
         handleSubmit={handleSubmit}
       />
       <Text style={styles.linkText}>
-        Already Register please {" "} 
+        Already Register please{" "}
         <Text style={styles.link} onPress={() => navigation.navigate("Login")}>
           LOGIN
         </Text>
